@@ -3,23 +3,14 @@
     "configurations": [
         {
             "name": "Debug Native",
-            "type": "cppdbg",
+            "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/Release/opengl_triangle_wasm.exe",
+            "program": "${workspaceFolder}/build/Debug/opengl_triangle_wasm.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": true,
-            "MIMode": "gdb",
-            "miDebuggerPath": "gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
-            ]
+            "console": "externalTerminal"
         }
     ]
 }
