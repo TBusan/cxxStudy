@@ -1,7 +1,20 @@
 cmake_minimum_required(VERSION 3.10)
 project(opengl_triangle_wasm)
 
-set(CMAKE_CXX_STANDARD 11)
+# 添加FetchContent模块
+include(FetchContent)
+
+# 配置threepp
+set(THREEPP_BUILD_TESTS OFF)
+set(THREEPP_BUILD_EXAMPLES OFF)
+FetchContent_Declare(
+    threepp
+    GIT_REPOSITORY https://github.com/markaren/threepp.git
+)
+FetchContent_MakeAvailable(threepp)
+
+# 更新C++标准以支持threepp
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Add GLAD
@@ -31,7 +44,9 @@ if(EMSCRIPTEN)
     )
     string(REPLACE ";" " " EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS}")
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS}")
-
+    
+    # Add threepp for Emscripten build
+    target_link_libraries(${PROJECT_NAME} threepp::threepp)
 else()
     # For native build
     find_package(OpenGL REQUIRED)
@@ -41,5 +56,6 @@ else()
     target_link_libraries(${PROJECT_NAME} 
         OpenGL::GL
         ${CMAKE_CURRENT_SOURCE_DIR}/glfw/lib-vc2022/glfw3.lib
+        threepp::threepp
     )
 endif() 
