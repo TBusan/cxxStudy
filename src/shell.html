@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebAssembly OpenGL Triangle</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #222;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        canvas {
+            display: block;
+            border: 1px solid #444;
+            margin: 20px auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 800px;
+        }
+        
+        h1 {
+            color: #8ac;
+        }
+        
+        .info {
+            margin: 10px 0;
+            font-size: 14px;
+            color: #aaa;
+        }
+        
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            color: #8ac;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #8ac;
+            animation: spin 1s linear infinite;
+            margin: 10px 0;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        #status, #error {
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        
+        #status {
+            color: #4c4;
+            background-color: rgba(0, 64, 0, 0.2);
+        }
+        
+        #error {
+            color: #f66;
+            background-color: rgba(64, 0, 0, 0.2);
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WebAssembly OpenGL Triangle</h1>
+        <div class="info">This is a simple OpenGL triangle rendered using WebAssembly</div>
+    </div>
+
+    <div class="loading" id="loading">
+        <div>Loading WebAssembly...</div>
+        <div class="spinner"></div>
+        <div id="status"></div>
+        <div id="error"></div>
+    </div>
+
+    <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+
+    <script>
+        // Handle WebGL context errors
+        function handleContextLost(event) {
+            event.preventDefault();
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('error').textContent = 'WebGL context lost. Please refresh the page.';
+        }
+        
+        function handleContextRestored(event) {
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('status').textContent = 'WebGL context restored!';
+        }
+        
+        var Module = {
+            canvas: (function() {
+                var canvas = document.getElementById('canvas');
+                // Add WebGL context event listeners
+                canvas.addEventListener('webglcontextlost', handleContextLost, false);
+                canvas.addEventListener('webglcontextrestored', handleContextRestored, false);
+                return canvas;
+            })(),
+            onRuntimeInitialized: function() {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('status').textContent = 'WebAssembly initialized successfully!';
+            },
+            printErr: function(text) {
+                console.error(text);
+                if (text.includes('GLAD') || text.includes('WebGL') || text.includes('GL')) {
+                    document.getElementById('error').style.display = 'block';
+                    document.getElementById('error').textContent = 'Error: ' + text;
+                }
+            }
+        };
+    </script>
+    {{{ SCRIPT }}}
+</body>
+</html> 
